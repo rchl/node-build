@@ -1,0 +1,63 @@
+From a056ef8741d31a94f5bb2e71164bbb307f2b8bd8 Mon Sep 17 00:00:00 2001
+From: Rafal Chlodnicki <rchl2k@gmail.com>
+Date: Mon, 20 Apr 2026 23:42:14 +0200
+Subject: [PATCH] apply some build fixes from electron
+
+---
+ configure.py   | 2 +-
+ node.gni       | 2 +-
+ unofficial.gni | 5 +++++
+ 3 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/configure.py b/configure.py
+index 98a8b147..fd13970a 100755
+--- a/configure.py
++++ b/configure.py
+@@ -1821,7 +1821,7 @@ def configure_v8(o, configs):
+   # Until we manage to get rid of all those, v8_enable_sandbox cannot be used.
+   # Note that enabling pointer compression without enabling sandbox is unsupported by V8,
+   # so this can be broken at any time.
+-  o['variables']['v8_enable_sandbox'] = 0
++  o['variables']['v8_enable_sandbox'] = 1 if options.enable_pointer_compression else 0
+   # We set v8_enable_pointer_compression_shared_cage to 0 always, even when
+   # pointer compression is enabled so that we don't accidentally enable shared
+   # cage mode when pointer compression is on.
+diff --git a/node.gni b/node.gni
+index d4438f7f..49473130 100644
+--- a/node.gni
++++ b/node.gni
+@@ -70,7 +70,7 @@ declare_args() {
+   # TODO(zcbenz): There are few broken things for now:
+   #   1. cross-os compilation is not supported.
+   #   2. node_mksnapshot crashes when cross-compiling for x64 from arm64.
+-  node_use_node_snapshot = (host_os == target_os) && !(host_cpu == "arm64" && target_cpu == "x64")
++  node_use_node_snapshot = false
+ 
+   # Build with Amaro (TypeScript utils).
+   node_use_amaro = true
+diff --git a/unofficial.gni b/unofficial.gni
+index c742b62c..ed7dae59 100644
+--- a/unofficial.gni
++++ b/unofficial.gni
+@@ -314,6 +314,7 @@ template("node_gn_build") {
+   }
+ 
+   executable("node_js2c") {
++    defines = []
+     deps = [
+       "deps/uv",
+       "$node_simdutf_path",
+@@ -325,6 +326,10 @@ template("node_gn_build") {
+       "src/embedded_data.h",
+     ]
+     include_dirs = [ "src" ]
++  
++    if (!is_win) {
++      defines += [ "NODE_JS2C_USE_STRING_LITERALS" ]
++    }
+   }
+ 
+   action("run_node_js2c") {
+-- 
+2.50.1 (Apple Git-155)
+

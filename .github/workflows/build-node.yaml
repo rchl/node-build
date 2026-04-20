@@ -188,6 +188,7 @@ jobs:
         working-directory: node-src
         run: |
           git apply ../patches/support_v8_sandboxed_pointers.patch
+          git apply ../patches/0001-apply-some-build-fixes-from-electron.patch
 
       - name: Configure
         working-directory: node-src
