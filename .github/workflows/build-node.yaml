@@ -45,7 +45,7 @@ jobs:
   build-linux-x64:
     needs: resolve-version
     if: github.event_name != 'workflow_dispatch' || inputs.linux-x64
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     env:
       NODE_TAG: ${{ needs.resolve-version.outputs.tag }}
     steps:
@@ -131,7 +131,7 @@ jobs:
   build-linux-arm64:
     needs: resolve-version
     if: github.event_name != 'workflow_dispatch' || inputs.linux-arm64
-    runs-on: ubuntu-22.04-arm
+    runs-on: ubuntu-24.04-arm
     env:
       NODE_TAG: ${{ needs.resolve-version.outputs.tag }}
     steps:
