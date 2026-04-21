@@ -1,4 +1,4 @@
-name: Build Node.js v24 from Source
+name: Build Node.js from Source
 
 on:
   workflow_dispatch:
@@ -28,21 +28,16 @@ on:
 
 jobs:
   # ─────────────────────────────────────────────
-  # Resolve the latest v24.x tag from nodejs/node
+  # Hardcoded Node.js version tag
   # ─────────────────────────────────────────────
   resolve-version:
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.get-tag.outputs.tag }}
     steps:
-      - name: Get latest v24.x tag
+      - name: Set tag
         id: get-tag
-        run: |
-          TAG=$(git ls-remote --tags https://github.com/nodejs/node.git \
-            | grep -oP 'refs/tags/v24\.\d+\.\d+$' \
-            | sort -V | tail -1 | sed 's|refs/tags/||')
-          echo "Resolved tag: $TAG"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+        run: echo "tag=v24.14.1" >> "$GITHUB_OUTPUT"
 
   # ─────────────────────────────────────────────
   # Linux x64
