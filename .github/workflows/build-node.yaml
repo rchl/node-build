@@ -84,18 +84,25 @@ jobs:
       - name: Configure
         working-directory: node-src
         run: |
+          # --prefix: install root inside the staging directory
+          # --release-urlbase: base URL embedded in the binary for update checks
+          # --tag: cleared so the version string is clean (e.g. v24.14.1, not v24.14.1-custom)
+          # --ninja: use Ninja instead of Make for faster incremental builds
+          # --experimental-enable-pointer-compression: compress V8 heap pointers from 8 to 4 bytes, reducing heap size
+          # --experimental-pointer-compression-shared-cage: share the pointer compression cage across Isolates in the same process
+          # --without-siphash: disable SipHash for V8 hash seeds, using a simpler alternative
           ./configure \
-            --prefix=/usr/local \                                     # install root inside the staging directory
-            --release-urlbase=https://nodejs.org/download/release/ \  # base URL embedded in the binary for update checks
-            --tag="" \                                                # clear the build tag so the version string is clean
-            --ninja \                                                 # use Ninja instead of Make — faster incremental builds
-            --experimental-enable-pointer-compression \               # compress V8 heap pointers from 8 to 4 bytes, reducing heap size
-            --experimental-pointer-compression-shared-cage \          # share the pointer compression cage across Isolates in the same process
-            --without-siphash                                         # disable SipHash for V8 hash seeds, using a simpler alternative
+            --prefix=/usr/local \
+            --release-urlbase=https://nodejs.org/download/release/ \
+            --tag="" \
+            --ninja \
+            --experimental-enable-pointer-compression \
+            --experimental-pointer-compression-shared-cage \
+            --without-siphash
 
       - name: Build  (this takes 20–40 min)
         working-directory: node-src
-        run: ninja -C out/Release -j$(nproc)
+        run: make -j4
 
       - name: Smoke test
         working-directory: node-src
@@ -139,7 +146,7 @@ jobs:
         run: |
           sudo apt-get update -q
           sudo apt-get install -y -q \
-            python3 g++ make ninja-build git \
+            python3 g++-12 make ninja-build git \
             libssl-dev pkg-config \
             xz-utils curl ca-certificates
 
@@ -169,17 +176,28 @@ jobs:
 
       - name: Configure
         working-directory: node-src
+        env:
+          CC: gcc-12
+          CXX: g++-12
         run: |
+          # --prefix: install root inside the staging directory
+          # --ninja: use Ninja instead of Make for faster incremental builds
+          # --experimental-enable-pointer-compression: compress V8 heap pointers from 8 to 4 bytes, reducing heap size
+          # --experimental-pointer-compression-shared-cage: share the pointer compression cage across Isolates in the same process
+          # --without-siphash: disable SipHash for V8 hash seeds, using a simpler alternative
           ./configure \
-            --prefix=/usr/local \                             # install root inside the staging directory
-            --ninja \                                         # use Ninja instead of Make — faster incremental builds
-            --experimental-enable-pointer-compression \       # compress V8 heap pointers from 8 to 4 bytes, reducing heap size
-            --experimental-pointer-compression-shared-cage \  # share the pointer compression cage across Isolates in the same process
-            --without-siphash                                 # disable SipHash for V8 hash seeds, using a simpler alternative
+            --prefix=/usr/local \
+            --ninja \
+            --experimental-enable-pointer-compression \
+            --experimental-pointer-compression-shared-cage \
+            --without-siphash
 
       - name: Build
         working-directory: node-src
-        run: ninja -C out/Release -j$(nproc)
+        env:
+          CC: gcc-12
+          CXX: g++-12
+        run: make -j4
 
       - name: Smoke test
         working-directory: node-src
@@ -215,7 +233,7 @@ jobs:
   build-macos-x64:
     needs: resolve-version
     if: github.event_name != 'workflow_dispatch' || inputs.macos-x64
-    runs-on: macos-15-intel
+    runs-on: macos-15-intel          # last Intel runner
     env:
       NODE_TAG: ${{ needs.resolve-version.outputs.tag }}
     steps:
@@ -249,17 +267,23 @@ jobs:
       - name: Configure
         working-directory: node-src
         run: |
+          # --prefix: install root inside the staging directory
+          # --openssl-use-def-ca-store: use the macOS system Keychain for CA certificates instead of the bundled Mozilla store
+          # --ninja: use Ninja instead of Make for faster incremental builds
+          # --experimental-enable-pointer-compression: compress V8 heap pointers from 8 to 4 bytes, reducing heap size
+          # --experimental-pointer-compression-shared-cage: share the pointer compression cage across Isolates in the same process
+          # --without-siphash: disable SipHash for V8 hash seeds, using a simpler alternative
           ./configure \
-            --prefix=/usr/local \                             # install root inside the staging directory
-            --openssl-use-def-ca-store \                      # use the macOS system Keychain for CA certificates instead of the bundled Mozilla store
-            --ninja \                                         # use Ninja instead of Make — faster incremental builds
-            --experimental-enable-pointer-compression \       # compress V8 heap pointers from 8 to 4 bytes, reducing heap size
-            --experimental-pointer-compression-shared-cage \  # share the pointer compression cage across Isolates in the same process
-            --without-siphash                                 # disable SipHash for V8 hash seeds, using a simpler alternative
+            --prefix=/usr/local \
+            --openssl-use-def-ca-store \
+            --ninja \
+            --experimental-enable-pointer-compression \
+            --experimental-pointer-compression-shared-cage \
+            --without-siphash
 
       - name: Build
         working-directory: node-src
-        run: make
+        run: make -j4
 
       - name: Smoke test
         working-directory: node-src
@@ -295,7 +319,7 @@ jobs:
   build-macos-arm64:
     needs: resolve-version
     if: github.event_name != 'workflow_dispatch' || inputs.macos-arm64
-    runs-on: macos-15  # M1/M2 runner — ships with Xcode 16 (Clang 16+)
+    runs-on: macos-15          # M1/M2 runner — ships with Xcode 16 (Clang 16+)
     env:
       NODE_TAG: ${{ needs.resolve-version.outputs.tag }}
     steps:
@@ -341,20 +365,26 @@ jobs:
           CC: /Applications/Xcode_16.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
           CXX: /Applications/Xcode_16.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
         run: |
+          # --prefix: install root inside the staging directory
+          # --openssl-use-def-ca-store: use the macOS system Keychain for CA certificates instead of the bundled Mozilla store
+          # --ninja: use Ninja instead of Make for faster incremental builds
+          # --experimental-enable-pointer-compression: compress V8 heap pointers from 8 to 4 bytes, reducing heap size
+          # --experimental-pointer-compression-shared-cage: share the pointer compression cage across Isolates in the same process
+          # --without-siphash: disable SipHash for V8 hash seeds, using a simpler alternative
           ./configure \
-            --prefix=/usr/local \                             # install root inside the staging directory
-            --openssl-use-def-ca-store \                      # use the macOS system Keychain for CA certificates instead of the bundled Mozilla store
-            --ninja \                                         # use Ninja instead of Make — faster incremental builds
-            --experimental-enable-pointer-compression \       # compress V8 heap pointers from 8 to 4 bytes, reducing heap size
-            --experimental-pointer-compression-shared-cage \  # share the pointer compression cage across Isolates in the same process
-            --without-siphash                                 # disable SipHash for V8 hash seeds, using a simpler alternative
+            --prefix=/usr/local \
+            --openssl-use-def-ca-store \
+            --ninja \
+            --experimental-enable-pointer-compression \
+            --experimental-pointer-compression-shared-cage \
+            --without-siphash
 
       - name: Build
         working-directory: node-src
         env:
           CC: /Applications/Xcode_16.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
           CXX: /Applications/Xcode_16.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
-        run: make
+        run: make -j4
 
       - name: Smoke test
         working-directory: node-src
@@ -484,7 +514,7 @@ jobs:
       - name: Download all build artifacts
         uses: actions/download-artifact@v4
         with:
-          path: artifacts  # each artifact lands in artifacts/<artifact-name>/
+          path: artifacts          # each artifact lands in artifacts/<artifact-name>/
 
       - name: Flatten artifacts into release-assets/
         run: |
