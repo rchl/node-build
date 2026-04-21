@@ -215,7 +215,7 @@ jobs:
   build-macos-x64:
     needs: resolve-version
     if: github.event_name != 'workflow_dispatch' || inputs.macos-x64
-    runs-on: macos-13          # last Intel runner
+    runs-on: macos-15-intel
     env:
       NODE_TAG: ${{ needs.resolve-version.outputs.tag }}
     steps:
@@ -390,7 +390,7 @@ jobs:
   build-windows-x64:
     needs: resolve-version
     if: github.event_name != 'workflow_dispatch' || inputs.windows-x64
-    runs-on: windows-2022
+    runs-on: windows-2025
     env:
       NODE_TAG: ${{ needs.resolve-version.outputs.tag }}
     steps:
