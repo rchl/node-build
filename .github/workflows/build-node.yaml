@@ -429,42 +429,16 @@ jobs:
         shell: cmd
         run: vcbuild.bat release x64 no-cctest package
 
-      - name: List Release directory
-        working-directory: node-src
-        shell: pwsh
-        run: Get-ChildItem Release | Select-Object Name, Length
-
       - name: Smoke test
         working-directory: node-src
         shell: cmd
         run: .\Release\node.exe --version
 
-      - name: Smoke test npm
-        working-directory: node-src
-        shell: cmd
-        run: .\Release\npm.cmd --version
-
-      - name: Package zip (full install tree)
-        working-directory: node-src
-        shell: pwsh
-        run: |
-          $dest = "node-${{ env.NODE_TAG }}-win-x64"
-          New-Item -ItemType Directory -Path $dest | Out-Null
-          # vcbuild places the full installable layout directly in Release\
-          # This mirrors what the official MSI installs: node.exe, npm/npx
-          # launchers, and the entire node_modules tree
-          Copy-Item Release\* $dest\ -Recurse -Force `
-            -Exclude "*.pdb","*.ilk","*.exp","*.lib","obj","tools"
-          Compress-Archive -Path $dest -DestinationPath "..\$dest.zip"
-          Write-Host "Archive size: $([math]::Round((Get-Item "..\$dest.zip").Length/1MB, 1)) MB"
-          Write-Host "Top-level entries:"
-          Get-ChildItem $dest | Select-Object -ExpandProperty Name
-
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
           name: node-${{ env.NODE_TAG }}-win-x64
-          path: node-${{ env.NODE_TAG }}-win-x64.zip
+          path: node-src/Release/node-${{ env.NODE_TAG }}-win-x64.zip
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
   # ─────────────────────────────────────────────
@@ -512,42 +486,16 @@ jobs:
         # vcbuild does not copy npm automatically — run the npm target explicitly
         run: vcbuild.bat release arm64 no-cctest package
 
-      - name: List Release directory
-        working-directory: node-src
-        shell: pwsh
-        run: Get-ChildItem Release | Select-Object Name, Length
-
       - name: Smoke test
         working-directory: node-src
         shell: cmd
         run: .\Release\node.exe --version
 
-      - name: Smoke test npm
-        working-directory: node-src
-        shell: cmd
-        run: .\Release\npm.cmd --version
-
-      - name: Package zip (full install tree)
-        working-directory: node-src
-        shell: pwsh
-        run: |
-          $dest = "node-${{ env.NODE_TAG }}-win-arm64"
-          New-Item -ItemType Directory -Path $dest | Out-Null
-          # vcbuild places the full installable layout directly in Release\
-          # This mirrors what the official MSI installs: node.exe, npm/npx
-          # launchers, and the entire node_modules tree
-          Copy-Item Release\* $dest\ -Recurse -Force `
-            -Exclude "*.pdb","*.ilk","*.exp","*.lib","obj","tools"
-          Compress-Archive -Path $dest -DestinationPath "..\$dest.zip"
-          Write-Host "Archive size: $([math]::Round((Get-Item "..\$dest.zip").Length/1MB, 1)) MB"
-          Write-Host "Top-level entries:"
-          Get-ChildItem $dest | Select-Object -ExpandProperty Name
-
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
           name: node-${{ env.NODE_TAG }}-win-arm64
-          path: node-${{ env.NODE_TAG }}-win-arm64.zip
+          path: node-src/Release/node-${{ env.NODE_TAG }}-win-arm64.zip
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
   # ─────────────────────────────────────────────
