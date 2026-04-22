@@ -500,8 +500,15 @@ jobs:
       - build-macos-arm64
       - build-windows-x64
     runs-on: ubuntu-latest
-    # Run as long as at least one build succeeded; failed or cancelled builds are ignored
-    if: always() && contains(needs.*.result, 'success')
+    # Run as long as at least one build job succeeded; resolve-version alone is not enough
+    if: >-
+      always() && (
+        needs.build-linux-x64.result == 'success' ||
+        needs.build-linux-arm64.result == 'success' ||
+        needs.build-macos-x64.result == 'success' ||
+        needs.build-macos-arm64.result == 'success' ||
+        needs.build-windows-x64.result == 'success'
+      )
     permissions:
       contents: write   # required to create releases and upload assets
     env:
