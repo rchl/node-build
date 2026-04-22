@@ -500,11 +500,8 @@ jobs:
       - build-macos-arm64
       - build-windows-x64
     runs-on: ubuntu-latest
-    # Release if every triggered build succeeded (skipped = not selected, which is fine)
-    if: >-
-      !contains(needs.*.result, 'failure') &&
-      !contains(needs.*.result, 'cancelled') &&
-      contains(needs.*.result, 'success')
+    # Run as long as at least one build succeeded; failed or cancelled builds are ignored
+    if: always() && contains(needs.*.result, 'success')
     permissions:
       contents: write   # required to create releases and upload assets
     env:
