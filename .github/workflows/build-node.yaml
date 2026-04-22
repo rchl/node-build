@@ -425,6 +425,12 @@ jobs:
         shell: cmd
         run: vcbuild.bat release x64 no-cctest
 
+      - name: Copy npm into Release
+        working-directory: node-src
+        shell: cmd
+        # vcbuild does not copy npm automatically — run the npm target explicitly
+        run: vcbuild.bat release x64 no-cctest npm-only
+
       - name: List Release directory
         working-directory: node-src
         shell: pwsh
