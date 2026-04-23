@@ -280,7 +280,9 @@ jobs:
       - name: Select Xcode 16
         # Ensures Clang 16+ is active — required by V8's C++20 TypeIndex cast
         # in deps/v8/src/wasm/value-type.h (fails on Clang 15 / Xcode 15)
-        run: sudo xcode-select --switch /Applications/Xcode_16.app/Contents/Developer
+        run: |
+          sudo xcode-select --switch /Applications/Xcode_16.4.app/Contents/Developer
+          echo "SDKROOT=$(xcrun --sdk macosx --show-sdk-path)" >> $GITHUB_ENV
 
       - name: Verify Clang version (must be 16+)
         run: clang++ --version
@@ -306,8 +308,8 @@ jobs:
         working-directory: node-src
         env:
           # Point the build system at the Xcode 16 toolchain explicitly
-          CC: /Applications/Xcode_16.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
-          CXX: /Applications/Xcode_16.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
+          CC: /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
+          CXX: /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
         run: |
           # --prefix: install root inside the staging directory
           # --openssl-use-def-ca-store: use the macOS system Keychain for CA certificates instead of the bundled Mozilla store
@@ -326,8 +328,8 @@ jobs:
       - name: Build
         working-directory: node-src
         env:
-          CC: /Applications/Xcode_16.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
-          CXX: /Applications/Xcode_16.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
+          CC: /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang
+          CXX: /Applications/Xcode_16.4.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
         run: make
 
       - name: Smoke test
