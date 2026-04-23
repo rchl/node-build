@@ -60,7 +60,7 @@ jobs:
 
       - name: Apply patches
         working-directory: node-src
-        run: ../script/git-import-patches ../patches
+        run: ../repo/script/git-import-patches ../repo/patches
 
       - name: Configure
         working-directory: node-src
@@ -138,7 +138,7 @@ jobs:
 
       - name: Apply patches
         working-directory: node-src
-        run: ../script/git-import-patches ../patches
+        run: ../repo/script/git-import-patches ../repo/patches
 
       - name: Configure
         working-directory: node-src
@@ -215,7 +215,7 @@ jobs:
 
       - name: Apply patches
         working-directory: node-src
-        run: ../script/git-import-patches ../patches
+        run: ../repo/script/git-import-patches ../repo/patches
 
       - name: Configure
         working-directory: node-src
@@ -296,7 +296,7 @@ jobs:
 
       - name: Apply patches
         working-directory: node-src
-        run: ../script/git-import-patches ../patches
+        run: ../repo/script/git-import-patches ../repo/patches
 
       - name: Configure
         working-directory: node-src
@@ -377,7 +377,7 @@ jobs:
       - name: Apply patches
         working-directory: node-src
         shell: bash
-        run: ../script/git-import-patches ../patches
+        run: ../repo/script/git-import-patches ../repo/patches
 
       - name: Build  (vcbuild.bat handles everything on Windows)
         working-directory: node-src
@@ -419,7 +419,7 @@ jobs:
       - name: Apply patches
         working-directory: node-src
         shell: bash
-        run: ../script/git-import-patches ../patches
+        run: ../repo/script/git-import-patches ../repo/patches
 
       - name: Build
         working-directory: node-src
