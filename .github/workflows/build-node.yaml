@@ -30,7 +30,7 @@ on:
 
 env:
   ARTIFACT_RETENTION_DAYS: 1
-  NODE_TAG: v24.14.1
+  NODE_TAG: v24.15.0
 
 jobs:
   # ─────────────────────────────────────────────
@@ -59,17 +59,8 @@ jobs:
           path: repo
 
       - name: Apply patches
-        run: |
-          shopt -s nullglob
-          patches=(repo/patches/*.patch)
-          if [ ${#patches[@]} -eq 0 ]; then
-            echo "No patches found, skipping."
-          else
-            for patch in "${patches[@]}"; do
-              echo "Applying $patch"
-              git -C node-src apply --verbose "../${patch}"
-            done
-          fi
+        working-directory: node-src
+        run: ../script/git-import-patches ../patches
 
       - name: Configure
         working-directory: node-src
@@ -146,17 +137,8 @@ jobs:
           path: repo
 
       - name: Apply patches
-        run: |
-          shopt -s nullglob
-          patches=(repo/patches/*.patch)
-          if [ ${#patches[@]} -eq 0 ]; then
-            echo "No patches found, skipping."
-          else
-            for patch in "${patches[@]}"; do
-              echo "Applying $patch"
-              git -C node-src apply --verbose "../${patch}"
-            done
-          fi
+        working-directory: node-src
+        run: ../script/git-import-patches ../patches
 
       - name: Configure
         working-directory: node-src
@@ -232,17 +214,8 @@ jobs:
           path: repo
 
       - name: Apply patches
-        run: |
-          shopt -s nullglob
-          patches=(repo/patches/*.patch)
-          if [ ${#patches[@]} -eq 0 ]; then
-            echo "No patches found, skipping."
-          else
-            for patch in "${patches[@]}"; do
-              echo "Applying $patch"
-              git -C node-src apply --verbose "../${patch}"
-            done
-          fi
+        working-directory: node-src
+        run: ../script/git-import-patches ../patches
 
       - name: Configure
         working-directory: node-src
@@ -322,17 +295,8 @@ jobs:
           path: repo
 
       - name: Apply patches
-        run: |
-          shopt -s nullglob
-          patches=(repo/patches/*.patch)
-          if [ ${#patches[@]} -eq 0 ]; then
-            echo "No patches found, skipping."
-          else
-            for patch in "${patches[@]}"; do
-              echo "Applying $patch"
-              git -C node-src apply --verbose "../${patch}"
-            done
-          fi
+        working-directory: node-src
+        run: ../script/git-import-patches ../patches
 
       - name: Configure
         working-directory: node-src
@@ -411,18 +375,9 @@ jobs:
           path: repo
 
       - name: Apply patches
-        shell: pwsh
-        run: |
-          $patches = Get-ChildItem -Path repo\patches -Filter *.patch -ErrorAction SilentlyContinue
-          if (-not $patches) {
-            Write-Host "No patches found, skipping."
-          } else {
-            foreach ($patch in $patches) {
-              Write-Host "Applying $($patch.Name)"
-              git -C node-src apply --verbose "$($patch.FullName)"
-              if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-            }
-          }
+        working-directory: node-src
+        shell: bash
+        run: ../script/git-import-patches ../patches
 
       - name: Build  (vcbuild.bat handles everything on Windows)
         working-directory: node-src
@@ -462,18 +417,9 @@ jobs:
           path: repo
 
       - name: Apply patches
-        shell: pwsh
-        run: |
-          $patches = Get-ChildItem -Path repo\patches -Filter *.patch -ErrorAction SilentlyContinue
-          if (-not $patches) {
-            Write-Host "No patches found, skipping."
-          } else {
-            foreach ($patch in $patches) {
-              Write-Host "Applying $($patch.Name)"
-              git -C node-src apply --verbose "$($patch.FullName)"
-              if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-            }
-          }
+        working-directory: node-src
+        shell: bash
+        run: ../script/git-import-patches ../patches
 
       - name: Build
         working-directory: node-src

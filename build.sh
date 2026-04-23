@@ -3,12 +3,14 @@
 set -e
 cd $(dirname $0)
 
-NODE_TAG=v24.14.1
+NODE_TAG=v24.15.0
+NODE_DIR="node-src-$NODE_TAG"
 
-git clone --depth 1 --branch "$NODE_TAG" https://github.com/nodejs/node.git node-src
-cd node-src
-git apply ../patches/support_v8_sandboxed_pointers.patch
-git apply ../patches/0001-apply-some-build-fixes-from-electron.patch
+if [ ! -d "$NODE_DIR" ]; then
+  git clone --depth 1 --branch "$NODE_TAG" https://github.com/nodejs/node.git "$NODE_DIR"
+  cd "$NODE_DIR" && ./../script/git-import-patches ../patches
+fi
+cd "$NODE_DIR"
 ./configure \
     --ninja \
     --experimental-enable-pointer-compression \
@@ -16,5 +18,5 @@ git apply ../patches/0001-apply-some-build-fixes-from-electron.patch
     --without-siphash \
     --prefix=/usr/local
 make
-rm -rf $(pwd)/../release
-make install DESTDIR=$(pwd)/../release
+rm -rf $(pwd)/../release || true
+make install DESTDIR=$(pwd)/release
