@@ -404,7 +404,9 @@ jobs:
       - name: Build  (vcbuild.bat handles everything on Windows)
         working-directory: node-src
         shell: cmd
-        run: vcbuild.bat release x64 no-cctest package
+        run: |
+          set config_flags=--experimental-enable-pointer-compression --experimental-pointer-compression-shared-cage --without-siphash
+          vcbuild.bat release x64 no-cctest package
 
       - name: Smoke test
         working-directory: node-src
@@ -446,7 +448,9 @@ jobs:
       - name: Build
         working-directory: node-src
         shell: cmd
-        run: vcbuild.bat release arm64 no-cctest package
+        run: |
+          set config_flags=--experimental-enable-pointer-compression --experimental-pointer-compression-shared-cage --without-siphash
+          vcbuild.bat release arm64 no-cctest package
 
       - name: Smoke test
         working-directory: node-src
