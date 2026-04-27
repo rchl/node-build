@@ -54,7 +54,8 @@ jobs:
         run: |
           sudo apt-get update -q
           sudo apt-get install -y -q \
-            python3 g++ make ninja-build git \
+            python3 make ninja-build git \
+            g++-12 gcc-12
             libssl-dev pkg-config \
             xz-utils curl ca-certificates
 
@@ -136,7 +137,8 @@ jobs:
         run: |
           sudo apt-get update -q
           sudo apt-get install -y -q \
-            python3 g++-12 make ninja-build git \
+            python3 make ninja-build git \
+            g++-12 gcc-12
             libssl-dev pkg-config \
             xz-utils curl ca-certificates
 
